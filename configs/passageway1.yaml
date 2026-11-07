@@ -1,0 +1,35 @@
+# EPFL "Passageway": подземный переход, плохой свет, 4 камеры (360x288, 25 к/с).
+# ВАЖНО: гомографии калибровки сделаны для кадра 720x576 (исходное DV-разрешение),
+# а видео — 360x288. Поэтому calibration_scale: 2 (пиксели видео умножаем на 2).
+name: passageway1
+description: "Подземный переход EPFL: люди идут в обе стороны, тёмная сцена"
+
+calibration: data/raw/epfl/calib/calibration-passageway.txt
+calibration_scale: 2.0
+ground_truth:
+  file: data/raw/epfl/calib/gt_passageway1.txt
+  grid: {width: 40, height: 99, origin: [0, 38.48], size: [155, 381]}
+
+birdseye:
+  # Подобрано перебором: uv run bi birdseye passageway1 --sweep (см. docs/05).
+  # Радиус больше, чем у lab6p: другие единицы и менее точная калибровка (коридор, даль).
+  merge_radius: 24
+  match_radius: 16
+  min_support: 2
+  zones:
+    - name: middle
+      polygon: [[0, 180], [155, 180], [155, 260], [0, 260]]
+
+cameras:
+  - id: 0
+    video: data/videos/epfl/passageway1/c0.mp4
+    lines:
+      - name: passage
+        start: [0, 175]
+        end: [345, 145]
+  - id: 1
+    video: data/videos/epfl/passageway1/c1.mp4
+  - id: 2
+    video: data/videos/epfl/passageway1/c2.mp4
+  - id: 3
+    video: data/videos/epfl/passageway1/c3.mp4

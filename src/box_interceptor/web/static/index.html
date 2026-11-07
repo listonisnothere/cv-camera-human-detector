@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Пульт камер</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="bar">
+    <p class="brand">Пульт камер <span>box-interceptor</span></p>
+
+    <form class="controls" id="controls">
+      <label>Сцена
+        <select id="scene" name="scene"></select>
+      </label>
+      <label class="source" id="source-field" hidden>Источник
+        <input id="source" name="source" type="text" autocomplete="off"
+               placeholder="путь к видео, 0 для камеры Mac или rtsp://…">
+      </label>
+      <label>Модель
+        <select id="model" name="model"></select>
+      </label>
+      <button type="submit">Запустить</button>
+    </form>
+
+    <fieldset class="toggles">
+      <legend class="visually-hidden">Что рисовать поверх видео</legend>
+      <label><input type="checkbox" id="trace" checked> След</label>
+      <label><input type="checkbox" id="heatmap"> Тепловая карта</label>
+    </fieldset>
+  </header>
+
+  <main class="room">
+    <section class="feeds" aria-label="Камеры">
+      <p class="scene-line" id="scene-line"></p>
+      <div class="wall" id="wall"></div>
+      <p class="notice" id="notice" role="status" hidden></p>
+    </section>
+
+    <aside class="side">
+      <section class="floor">
+        <h2>План пола</h2>
+        <img id="top" alt="Вид сверху: где стоят люди" hidden>
+        <p class="hint" id="floor-none" hidden>
+          У этой сцены нет калибровки камер, поэтому плана пола нет.
+          Он есть у лаборатории и подземного перехода.
+        </p>
+        <dl class="figures" id="floor-figures"></dl>
+      </section>
+
+      <section class="speed">
+        <h2>Успевает ли ИИ</h2>
+        <p id="speed-text">—</p>
+        <div class="meter" aria-hidden="true"><span id="speed-bar"></span></div>
+        <p class="hint" id="speed-detail"></p>
+      </section>
+
+      <section class="legend">
+        <h2>Что рисует ИИ</h2>
+        <dl>
+          <div>
+            <dt><svg viewBox="0 0 28 20" aria-hidden="true"><rect x="3" y="2" width="22" height="16" fill="none" stroke="#a351fb" stroke-width="2.5"/></svg>Рамка</dt>
+            <dd>ИИ нашёл человека. Цвет закреплён за этим человеком, пока трекер его ведёт.</dd>
+          </div>
+          <div>
+            <dt><span class="chip">#12 0.86</span></dt>
+            <dd>Номер трека: на следующих кадрах у того же человека тот же номер. Второе число — уверенность модели от 0 до 1.</dd>
+          </div>
+          <div>
+            <dt><svg viewBox="0 0 28 20" aria-hidden="true"><path d="M2 16 C8 16 9 6 15 8 S22 4 26 3" fill="none" stroke="#4cfb12" stroke-width="2.5"/></svg>Хвост</dt>
+            <dd>Путь ступней человека за последние полторы секунды.</dd>
+          </div>
+          <div>
+            <dt><svg viewBox="0 0 28 20" aria-hidden="true"><path d="M3 12 L12 3 L25 7 L15 17 Z" fill="rgba(255,159,28,.25)" stroke="#ff9f1c" stroke-width="2"/></svg>Зона</dt>
+            <dd>Число в углу — сколько людей стоит в ней прямо сейчас. Считаются ступни, а не голова.</dd>
+          </div>
+          <div>
+            <dt><svg viewBox="0 0 28 20" aria-hidden="true"><line x1="3" y1="17" x2="25" y2="3" stroke="#fff" stroke-width="2.5"/></svg>Линия</dt>
+            <dd>Счётчик проходов: in и out — сколько людей пересекло её в каждую сторону.</dd>
+          </div>
+          <div>
+            <dt><svg viewBox="0 0 28 20" aria-hidden="true"><circle cx="7" cy="10" r="3" fill="#f58742"/><circle cx="12" cy="13" r="3" fill="#78c850"/><circle cx="21" cy="10" r="5" fill="#000" stroke="#fff"/></svg>Точки на плане</dt>
+            <dd>Цветные — человек, увиденный одной камерой. Чёрные — итог после склейки камер. Пустые кружки раз в секунду показывают, где люди на самом деле, по разметке датасета.</dd>
+          </div>
+        </dl>
+      </section>
+    </aside>
+  </main>
+
+  <script src="/static/app.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+# EPFL "Terrace", до 9 человек, 4 синхронные камеры (360x288, 25 к/с), улица.
+# Вида сверху нет: калибровка из calibration-terrace.txt не согласуется с ground truth
+# (GT построен по другой калибровке — модели Tsai). Подробности в docs/05-multicam-birdseye.md.
+name: terrace1
+description: "Терраса EPFL: до 9 человек на улице ~3.5 мин"
+
+cameras:
+  - id: 0
+    video: data/videos/epfl/terrace1/c0.mp4
+    zones:
+      - name: center
+        polygon: [[60, 170], [300, 150], [360, 200], [360, 288], [0, 288], [0, 220]]
+    lines:
+      - name: cross
+        start: [0, 200]
+        end: [360, 170]
+  - id: 1
+    video: data/videos/epfl/terrace1/c1.mp4
+  - id: 2
+    video: data/videos/epfl/terrace1/c2.mp4
+  - id: 3
+    video: data/videos/epfl/terrace1/c3.mp4

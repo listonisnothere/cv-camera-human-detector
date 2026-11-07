@@ -1,0 +1,320 @@
+/* Пульт камер. Тёмная сине-серая "ночная смена": видео на ней читается лучше,
+   как в настоящей диспетчерской. Единственный акцент — янтарный #ff9f1c, тот же,
+   которым ИИ рисует зоны на кадре: интерфейс и картинка говорят одним цветом. */
+
+:root {
+  --bg: #1e2430;
+  --panel: #252d3a;
+  --rule: #354052;
+  --text: #e6e9ef;
+  --muted: #9aa5b8;
+  --amber: #ff9f1c;
+  --alert: #ff8a7a;
+  --font: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+/* Атрибут hidden должен побеждать любые display: grid/flex ниже */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 15px/1.45 var(--font);
+  font-variant-numeric: tabular-nums;
+}
+
+h2 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- верхняя панель ---------- */
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px 28px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.brand {
+  margin: 0 auto 4px 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.brand span {
+  margin-left: 6px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px;
+}
+
+.controls label {
+  display: grid;
+  gap: 3px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+select, input[type="text"] {
+  min-width: 190px;
+  padding: 7px 9px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+}
+
+.source input { min-width: 300px; }
+
+button {
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--amber);
+  color: #1e2430;
+  font: 600 15px var(--font);
+  cursor: pointer;
+}
+
+button:hover { background: #ffb24d; }
+
+.toggles {
+  display: flex;
+  gap: 16px;
+  margin: 0 0 6px;
+  padding: 0;
+  border: 0;
+}
+
+.toggles label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.toggles input { accent-color: var(--amber); }
+
+/* ---------- стена мониторов ---------- */
+
+.room {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  min-height: 0;
+}
+
+.feeds {
+  position: relative;
+  padding: 14px 20px 20px;
+}
+
+.scene-line {
+  margin: 0 0 10px;
+  color: var(--muted);
+}
+
+.scene-line strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* Ширина стены подобрана так, чтобы два ряда камер (5:4) помещались по высоте окна */
+.wall {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  width: min(100%, calc((100dvh - 150px) * 1.25));
+}
+
+.wall[data-count="1"] { grid-template-columns: minmax(0, 1fr); max-width: 960px; }
+
+.cam {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 5 / 4;
+  background: #2b3444;
+  overflow: hidden;
+}
+
+.cam img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Подпись поверх видео — как экранные надписи у камер наблюдения */
+.cam figcaption {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 5px 10px 6px;
+  background: rgba(22, 27, 36, 0.78);
+}
+
+.cam-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cam-count {
+  color: var(--amber);
+  font-weight: 600;
+}
+
+.cam-extra {
+  margin: 1px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.cam-extra:empty { display: none; }
+
+.notice {
+  position: absolute;
+  inset: 50px 20px 20px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 24px;
+  background: rgba(30, 36, 48, 0.86);
+  font-size: 18px;
+  text-align: center;
+}
+
+.notice[data-kind="error"] { color: var(--alert); }
+
+/* ---------- боковая колонка ---------- */
+
+.side {
+  border-left: 1px solid var(--rule);
+  background: var(--panel);
+}
+
+.side section {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.side section:last-child { border-bottom: 0; }
+
+#top {
+  display: block;
+  width: 100%;
+  border-radius: 2px;
+}
+
+.figures {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  margin: 12px 0 0;
+}
+
+.figures dt { color: var(--muted); }
+
+.figures dd {
+  margin: 0;
+  color: var(--amber);
+  font-weight: 600;
+  text-align: right;
+}
+
+.hint {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.meter {
+  height: 6px;
+  margin-top: 8px;
+  background: var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.meter span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--amber);
+}
+
+.legend dl { margin: 0; }
+
+.legend div + div { margin-top: 10px; }
+
+.legend dt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.legend svg { width: 28px; height: 20px; flex: none; }
+
+.legend dd {
+  margin: 2px 0 0 36px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.chip {
+  padding: 0 5px;
+  border-radius: 2px;
+  background: #a351fb;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ---------- узкие экраны ---------- */
+
+@media (max-width: 1000px) {
+  .room { grid-template-columns: minmax(0, 1fr); }
+  .side { border-left: 0; border-top: 1px solid var(--rule); }
+  .brand { width: 100%; }
+}
+
+@media (max-width: 600px) {
+  .bar, .feeds { padding-left: 16px; padding-right: 16px; }
+  .wall { grid-template-columns: minmax(0, 1fr); }
+  select, input[type="text"], .source input { min-width: 0; width: 100%; }
+  .controls, .controls label { width: 100%; }
+}

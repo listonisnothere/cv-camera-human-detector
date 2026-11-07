@@ -1,0 +1,65 @@
+[project]
+name = "box-interceptor"
+version = "0.1.0"
+description = "Учебный проект: детекция, трекинг и аналитика людей на видео с камер (YOLO26, RF-DETR, ByteTrack)"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    # --- модели ---
+    "ultralytics>=8.4",        # YOLO26: детекция, обучение, экспорт
+    "rfdetr>=1.10",            # RF-DETR: трансформерный детектор (для сравнения)
+    # --- видеоаналитика ---
+    "supervision>=0.27",       # Detections, отрисовка, зоны, линии, метрики mAP
+    "trackers>=2.0",           # ByteTrack + метрики трекинга (HOTA/MOTA/IDF1) от Roboflow
+    # --- инфраструктура ---
+    "typer>=0.15",             # CLI: `uv run bi ...`
+    "scipy>=1.13",             # венгерский алгоритм (сопоставление точек в виде сверху)
+    "pydantic>=2.9",           # валидация YAML-конфигов сцен
+    "pyyaml>=6.0",
+    "pandas>=2.2",             # таблицы с результатами
+    "matplotlib>=3.9",         # графики
+    "coremltools>=8.0",        # экспорт в CoreML (Neural Engine на Apple Silicon)
+    # --- веб-панель ---
+    "fastapi>=0.115",          # HTTP API + раздача видеопотоков
+    "uvicorn>=0.32",           # сервер, на котором работает FastAPI
+    "websockets>=13",          # WebSocket для uvicorn: кадры и цифры в браузер одним соединением
+    # coremltools 9.0 делает float(массив из 1 элемента), а NumPy >= 2.4 это запретил:
+    # "TypeError: only 0-dimensional arrays can be converted to Python scalars".
+    # Снять ограничение, когда выйдет совместимый coremltools.
+    "numpy<2.4",
+]
+
+[project.scripts]
+bi = "box_interceptor.cli:app"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "httpx>=0.27",             # нужен FastAPI TestClient в tests/test_web.py
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/box_interceptor"]
+
+[tool.uv]
+# Не берём пакеты, опубликованные позже этой даты.
+# 1) воспроизводимость: через месяц `uv sync` соберёт то же самое;
+# 2) защита от свежих скомпрометированных релизов (supply-chain атак).
+exclude-newer = "2026-10-23T00:00:00Z"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+# Длину строк держит `ruff format`; отдельные длинные строки помечены `# fmt: skip` намеренно.
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

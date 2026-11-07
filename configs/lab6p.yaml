@@ -1,0 +1,36 @@
+# EPFL "Laboratory", 6 человек, 4 синхронные камеры (360x288, 25 к/с).
+# Координаты линий и зон камер — в пикселях кадра этой камеры.
+# Координаты birdseye.zones — на полу (в единицах калибровки, область 358 x 360).
+name: lab6p
+description: "Лаборатория EPFL: 6 человек ходят по комнате ~2.5 мин"
+
+calibration: data/raw/epfl/calib/calibration-6p.txt
+ground_truth:
+  file: data/raw/epfl/calib/gt_lab_6p.txt
+  grid: {width: 56, height: 56, origin: [0, 0], size: [358, 360]}
+
+birdseye:
+  # Подобрано перебором: uv run bi birdseye lab6p --sweep (см. docs/05)
+  merge_radius: 37.5
+  match_radius: 40
+  min_support: 2
+  zones:
+    - name: center
+      polygon: [[120, 120], [240, 120], [240, 240], [120, 240]]
+
+cameras:
+  - id: 0
+    video: data/videos/epfl/lab6p/c0.mp4
+    zones:
+      - name: rug
+        polygon: [[5, 135], [130, 93], [192, 115], [50, 173]]
+    lines:
+      - name: middle
+        start: [230, 100]
+        end: [150, 288]
+  - id: 1
+    video: data/videos/epfl/lab6p/c1.mp4
+  - id: 2
+    video: data/videos/epfl/lab6p/c2.mp4
+  - id: 3
+    video: data/videos/epfl/lab6p/c3.mp4

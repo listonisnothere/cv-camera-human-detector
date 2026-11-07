@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Данные, веса и результаты: большие файлы не храним в git.
+# Ведущий "/" привязывает шаблон к корню: без него "data/" скрыл бы и
+# исходный пакет src/box_interceptor/data/.
+/data/
+/models/
+/outputs/
+/runs/
+*.pt
+*.pth
+*.onnx
+*.mlpackage/
+*.mlmodel
+
+# macOS
+.DS_Store
+/docs/
